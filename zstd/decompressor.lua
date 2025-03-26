@@ -33,14 +33,38 @@ local function init_stream()
   return stream
 end
 
-function _M.new()
+local function load_dictionary(stream, file)
+  local dict = io.open(file, "rb")
+  local current = dict:seek()
+  local dict_size = dict:seek("end")
+  dict:seek("set", current)
+  local dict_content = ffi_new("char[?]", dict_size, dict:read("*a"))
+  dict:close()
+
+  local res = zstd.ZSTD_DCtx_loadDictionary(stream, dict_content, dict_size)
+  if zstd.ZSTD_isError(res) ~= 0 then
+    return "run ZSTD_DCtx_loadDictionary() failed: " .. ffi_str(zstd.ZSTD_getErrorName(res))
+  end
+end
+
+function _M.new(options)
+  options = options or {}
+
   local stream, err = init_stream()
   if not stream then
     return nil, err
   end
 
+  if options.dictionary then
+    local err = load_dictionary(stream, options.dictionary)
+    if err then
+      return nil, err
+    end
+  end
+
   return setmetatable({
     stream = stream,
+    dictionary = options.dictionary
   }, mt), nil
 end
 
@@ -77,7 +101,7 @@ end
 
 function _M:decompress_file(file_i, file_o)
   local file_in = io.open(file_i, "rb")
-  local file_out = io.open(file_o or gsub(file_i, "%.zst", ""), "wb")
+  local file_out = io.open(file_o or string_gsub(file_i, "%.zst", ""), "wb")
 
   local buff_in_size = tonumber(zstd.ZSTD_DStreamInSize())
   local data_in = file_in:read(buff_in_size)

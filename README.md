@@ -3,9 +3,17 @@
 * Compress and decompress files
 
 ```lua
-local compressor = require("zstd.compressor").new()
+compressor = require("zstd.compressor").new()
 compressor:compress_file("file")
 
-local decompressor = require("zstd.decompressor").new()
+-- with compress level and dictionary
+compressor = require("zstd.compressor").new({ clevel = 10, dictionary = "dictionary" })
+compressor:compress_file("file")
+
+decompressor = require("zstd.decompressor").new()
+decompressor:decompress_file("file.zst")
+
+-- with dictionary
+decompressor = require("zstd.decompressor").new({ dictionary = "dictionary" })
 decompressor:decompress_file("file.zst")
 ```

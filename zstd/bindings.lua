@@ -34,6 +34,8 @@ size_t ZSTD_DStreamInSize(void);
 size_t ZSTD_DStreamOutSize(void);
 size_t ZSTD_decompressStream(ZSTD_DStream* zds, ZSTD_outBuffer* output, ZSTD_inBuffer* input);
 
+size_t ZSTD_DCtx_loadDictionary(ZSTD_DCtx* dctx, const void* dict, size_t dictSize);
+
 const char* ZSTD_versionString(void);
 unsigned ZSTD_isError(size_t result);
 const char* ZSTD_getErrorName(size_t result);

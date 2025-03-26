@@ -69,7 +69,7 @@ function _M.new(options)
 
   return setmetatable({
     stream = stream,
-    clevel = clevel,
+    clevel = options.clevel,
     dictionary = options.dictionary,
   }, mt), nil
 end
