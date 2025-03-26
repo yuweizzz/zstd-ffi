@@ -35,6 +35,20 @@ local function init_stream(clevel)
   return stream
 end
 
+local function load_dictionary(stream, file)
+  local dict = io.open(file, "rb")
+  local current = dict:seek()
+  local dict_size = dict:seek("end")
+  dict:seek("set", current)
+  local dict_content = ffi_new("char[?]", dict_size, dict:read("*a"))
+  dict:close()
+
+  local res = zstd.ZSTD_CCtx_loadDictionary(stream, dict_content, dict_size)
+  if zstd.ZSTD_isError(res) ~= 0 then
+    return "run ZSTD_CCtx_loadDictionary() failed: " .. ffi_str(zstd.ZSTD_getErrorName(res))
+  end
+end
+
 function _M.new(options)
   options = options or {}
   -- regular compression levels from 1 up to ZSTD_maxCLevel()
@@ -46,9 +60,17 @@ function _M.new(options)
     return nil, err
   end
 
+  if options.dictionary then
+    local err = load_dictionary(stream, options.dictionary)
+    if err then
+      return nil, err
+    end
+  end
+
   return setmetatable({
     stream = stream,
     clevel = clevel,
+    dictionary = options.dictionary,
   }, mt), nil
 end
 

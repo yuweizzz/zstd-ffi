@@ -23,6 +23,8 @@ size_t ZSTD_CStreamOutSize(void);
 size_t ZSTD_compressStream(ZSTD_CStream* zcs, ZSTD_outBuffer* output, ZSTD_inBuffer* input);
 size_t ZSTD_endStream(ZSTD_CStream* zcs, ZSTD_outBuffer* output);
 
+size_t ZSTD_CCtx_loadDictionary(ZSTD_CCtx* cctx, const void* dict, size_t dictSize);
+
 typedef struct ZSTD_DCtx_s ZSTD_DCtx;
 typedef ZSTD_DCtx ZSTD_DStream;
 ZSTD_DStream* ZSTD_createDStream(void);
