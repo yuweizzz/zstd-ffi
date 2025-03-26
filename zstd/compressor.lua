@@ -16,7 +16,8 @@ local _M = {
 
 local mt = { __index = _M }
 
-local ZSTD_CLEVEL_DEFAULT = 3
+local ZSTD_CLEVEL_DEFAULT = zstd.ZSTD_defaultCLevel()
+local ZSTD_CLEVEL_MAX = zstd.ZSTD_maxCLevel()
 
 local arr_type = ffi_typeof("uint8_t[?]")
 local ptr_zstd_inbuffer_type = ffi_typeof("ZSTD_inBuffer[1]")
@@ -36,7 +37,10 @@ end
 
 function _M.new(options)
   options = options or {}
-  options.clevel = options.clevel or ZSTD_CLEVEL_DEFAULT
+  -- regular compression levels from 1 up to ZSTD_maxCLevel()
+  if not options.clevel or options.clevel > ZSTD_CLEVEL_MAX or options.clevel < 1 then
+    options.clevel = ZSTD_CLEVEL_DEFAULT
+  end
   local stream, err = init_stream(options.clevel)
   if not stream then
     return nil, err

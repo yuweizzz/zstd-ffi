@@ -35,6 +35,8 @@ size_t ZSTD_decompressStream(ZSTD_DStream* zds, ZSTD_outBuffer* output, ZSTD_inB
 const char* ZSTD_versionString(void);
 unsigned ZSTD_isError(size_t result);
 const char* ZSTD_getErrorName(size_t result);
+int ZSTD_maxCLevel(void);
+int ZSTD_defaultCLevel(void);
 ]]
 
 return bindings
