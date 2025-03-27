@@ -35,8 +35,12 @@ local function init_stream(clevel)
   return stream
 end
 
-local function load_dictionary(stream, file)
-  local dict = io.open(file, "rb")
+local function _load_dictionary(stream, file)
+  local ok, dict = pcall(io.open, file, "rb")
+  if not ok then
+    return "open dictionary file failed"
+  end
+
   local current = dict:seek()
   local dict_size = dict:seek("end")
   dict:seek("set", current)
@@ -61,7 +65,7 @@ function _M.new(options)
   end
 
   if options.dictionary then
-    local err = load_dictionary(stream, options.dictionary)
+    local err = _load_dictionary(stream, options.dictionary)
     if err then
       return nil, err
     end
@@ -84,6 +88,23 @@ function _M:free()
     return "run ZSTD_freeCStream() failed: " .. ffi_str(zstd.ZSTD_getErrorName(res))
   end
   return nil
+end
+
+function _M:load_dictionary(file)
+  local err = _load_dictionary(self.stream, file)
+  if err then
+    return err
+  end
+  self.dictionary = file
+end
+
+function _M:unload_dictionary()
+  local ptr = ffi_new("char[0]")
+  local res = zstd.ZSTD_CCtx_loadDictionary(self.stream, ptr, 0)
+  if zstd.ZSTD_isError(res) ~= 0 then
+    return "run ZSTD_CCtx_loadDictionary() failed: " .. ffi_str(zstd.ZSTD_getErrorName(res))
+  end
+  self.dictionary = nil
 end
 
 function _M:compress(data_in)
@@ -122,8 +143,14 @@ function _M:end_stream()
 end
 
 function _M:compress_file(file)
-  local file_in = io.open(file, "rb")
-  local file_out = io.open(file .. ".zst", "wb")
+  local ok, file_in = pcall(io.open, file, "rb")
+  if not ok then
+    error("open file failed")
+  end
+  local ok, file_out = pcall(io.open, file .. ".zst", "wb")
+  if not ok then
+    error("open file failed")
+  end
 
   local buff_in_size = tonumber(zstd.ZSTD_CStreamInSize())
   local data_in = file_in:read(buff_in_size)
