@@ -72,3 +72,5 @@ location / {
     }
 }
 ```
+
+todo: use `ZSTDLIB_API` to instead of `options.use_raw`.
