@@ -3,19 +3,28 @@
 * Compress and decompress files
 
 ```lua
+file_path_to_compress = "file_path_to_compress"
+file_path_to_decompress = "file_path_to_decompress"  -- normally named like "file.zst"
+dictionary_file_path = "dictionary_file_path"
+
+-- compress file
 compressor = require("zstd.compressor").new()
-compressor:compress_file("file")
+compressor:compress_file(file_path_to_compress)
 
--- with compress level and dictionary
-compressor = require("zstd.compressor").new({ clevel = 10, dictionary = "dictionary" })
-compressor:compress_file("file")
-
+-- decompress file
 decompressor = require("zstd.decompressor").new()
-decompressor:decompress_file("file.zst")
+decompressor:decompress_file(file_path_to_decompress)
 
--- with dictionary
-decompressor = require("zstd.decompressor").new({ dictionary = "dictionary" })
-decompressor:decompress_file("file.zst")
+-- compress with compress level and dictionary
+dict = io.open(dictionary_file_path, "rb")
+dict_data = dict:read("*a")
+dict:close()
+compressor = require("zstd.compressor").new({ clevel = 10, dictionary = dict_data })
+compressor:compress_file(file_path_to_compress)
+
+-- use raw dictionary, make sure the used dictionary without zstd dictionary id and magic number
+compressor = require("zstd.compressor").new({ clevel = 10, dictionary = dict_data, use_raw = true })
+compressor:compress_file(file_path_to_compress)
 ```
 
 * Compressing Response
@@ -24,17 +33,15 @@ decompressor:decompress_file("file.zst")
 location / {
     header_filter_by_lua_block {
         local accept_zstd
-        local encoding = ngx.var.http_content_encoding
-        if encoding then
-            accept_zstd = false
+        if ngx.var.http_content_encoding then
             return
         end
+
         local accept_encoding = ngx.var.http_accept_encoding
-        if accept_encoding then
-            if string.find(accept_encoding, "zstd") then
-                accept_zstd = true
-            end
+        if accept_encoding and string.find(accept_encoding, "zstd") then
+            accept_zstd = true
         end
+
         if accept_zstd then
             local compressor, err = require("zstd.compressor").new()
             if not err then

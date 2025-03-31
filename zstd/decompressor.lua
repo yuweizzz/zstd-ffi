@@ -6,6 +6,7 @@ local ffi_str = ffi.string
 local ffi_typeof = ffi.typeof
 local table_insert = table.insert
 local table_concat = table.concat
+local string_sub = string.sub
 local string_gsub = string.gsub
 
 require "zstd.bindings"
@@ -33,18 +34,21 @@ local function init_stream()
   return stream
 end
 
-local function _load_dictionary(stream, file)
-  local ok, dict = pcall(io.open, file, "rb")
-  if not ok then
-    return "open dictionary file failed"
-  end
-  local current = dict:seek()
-  local dict_size = dict:seek("end")
-  dict:seek("set", current)
-  local dict_content = ffi_new("char[?]", dict_size, dict:read("*a"))
-  dict:close()
+local function _load_dictionary(stream, data, use_raw)
+  -- Magic_Number: 0xEC30A437, little-endian format
+  local magic = string.char(55, 164, 48, 236)
+  local header = string_sub(data, 1, 4)
 
-  local res = zstd.ZSTD_DCtx_loadDictionary(stream, dict_content, dict_size)
+  if not use_raw and header ~= magic then
+    return "require ZSTD Dictionary create by zstd training"
+  end
+
+  if use_raw and header == magic then
+    -- remove Magic_Number and Dictionary_ID
+    data = string_sub(data, 8)
+  end
+
+  local res = zstd.ZSTD_DCtx_loadDictionary(stream, data, #data)
   if zstd.ZSTD_isError(res) ~= 0 then
     return "run ZSTD_DCtx_loadDictionary() failed: " .. ffi_str(zstd.ZSTD_getErrorName(res))
   end
@@ -58,8 +62,10 @@ function _M.new(options)
     return nil, err
   end
 
+  -- default use dictionary create by "zstd --train"
+  options.use_raw = options.use_raw or false
   if options.dictionary then
-    local err = _load_dictionary(stream, options.dictionary)
+    local err = _load_dictionary(stream, options.dictionary, options.use_raw)
     if err then
       return nil, err
     end
@@ -67,7 +73,8 @@ function _M.new(options)
 
   return setmetatable({
     stream = stream,
-    dictionary = options.dictionary
+    dictionary = options.dictionary,
+    use_raw = options.use_raw,
   }, mt), nil
 end
 
@@ -83,17 +90,16 @@ function _M:free()
   return nil
 end
 
-function _M:load_dictionary(file)
-  local err = _load_dictionary(self.stream, file)
+function _M:load_dictionary(data)
+  local err = _load_dictionary(self.stream, data, self.use_raw)
   if err then
     return err
   end
-  self.dictionary = file
+  self.dictionary = data
 end
 
 function _M:unload_dictionary()
-  local ptr = ffi_new("char[0]")
-  local res = zstd.ZSTD_DCtx_loadDictionary(self.stream, ptr, 0)
+  local res = zstd.ZSTD_DCtx_loadDictionary(self.stream, nil, 0)
   if zstd.ZSTD_isError(res) ~= 0 then
     return "run ZSTD_DCtx_loadDictionary() failed: " .. ffi_str(zstd.ZSTD_getErrorName(res))
   end

@@ -105,8 +105,7 @@ function _M:load_dictionary(data)
 end
 
 function _M:unload_dictionary()
-  local ptr = ffi_new("char[0]")
-  local res = zstd.ZSTD_CCtx_loadDictionary(self.stream, ptr, 0)
+  local res = zstd.ZSTD_CCtx_loadDictionary(self.stream, nil, 0)
   if zstd.ZSTD_isError(res) ~= 0 then
     return "run ZSTD_CCtx_loadDictionary() failed: " .. ffi_str(zstd.ZSTD_getErrorName(res))
   end
