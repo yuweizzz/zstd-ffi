@@ -32,7 +32,7 @@ Installation
 
 Require Zstandard version above v1.5.0, to install Zstandard shared libraries, please check [here](https://github.com/facebook/zstd?tab=readme-ov-file#build-instructions).
 
-To install this project, placing zstd/*.lua to your lua library path.
+To install this project, placing `zstd/*.lua` to your lua library path.
 
 Methods
 =================
@@ -247,8 +247,8 @@ location / {
 Reference
 =================
 
-- [zstd](https://github.com/facebook/zstd/blob/dev/lib/zstd.h)
-- [zstd streaming compression](https://github.com/facebook/zstd/blob/dev/examples/streaming_compression.c)
+- [zstd.h](https://github.com/facebook/zstd/blob/dev/lib/zstd.h)
+- [streaming compression](https://github.com/facebook/zstd/blob/dev/examples/streaming_compression.c)
 - [luajit-zstd](https://github.com/sjnam/luajit-zstd)
 
 [Back to TOC](#table-of-contents)
