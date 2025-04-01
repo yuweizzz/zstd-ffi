@@ -1,6 +1,19 @@
 # zstd-ffi
 
-* Compress and decompress files
+FFI-based facebook [Zstandard](https://github.com/facebook/zstd) binding for LuaJIT.
+
+Table of Contents
+=================
+
+- [Example](#example)
+  - [Compress and decompress files](#compress-and-decompress-files)
+  - [Compress http response](#compress-http-response)
+- [Methods](#methods)
+
+Example
+=================
+
+## Compress and decompress files
 
 ```lua
 file_path_to_compress = "file_path_to_compress"
@@ -22,12 +35,14 @@ dict:close()
 compressor = require("zstd.compressor").new({ clevel = 10, dictionary = dict_data })
 compressor:compress_file(file_path_to_compress)
 
--- use raw dictionary, make sure the used dictionary without zstd dictionary id and magic number
+-- if the used dictionary does not match Zstandard's specification, pass the use_raw options
 compressor = require("zstd.compressor").new({ clevel = 10, dictionary = dict_data, use_raw = true })
 compressor:compress_file(file_path_to_compress)
 ```
 
-* Compressing Response
+[Back to TOC](#table-of-contents)
+
+## Compress http response
 
 ```lua
 location / {
@@ -73,4 +88,4 @@ location / {
 }
 ```
 
-todo: use `ZSTDLIB_API` to instead of `options.use_raw`.
+[Back to TOC](#table-of-contents)

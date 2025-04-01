@@ -40,12 +40,11 @@ local function _load_dictionary(stream, data, use_raw)
   local header = string_sub(data, 1, 4)
 
   if not use_raw and header ~= magic then
-    return "require ZSTD Dictionary create by zstd training"
+    return "require dictionary that matches Zstandard's specification"
   end
 
   if use_raw and header == magic then
-    -- remove Magic_Number and Dictionary_ID
-    data = string_sub(data, 8)
+    return "require raw dictionary, current dictionary starting with ZSTD_MAGIC_DICTIONARY"
   end
 
   local res = zstd.ZSTD_DCtx_loadDictionary(stream, data, #data)
@@ -62,7 +61,7 @@ function _M.new(options)
     return nil, err
   end
 
-  -- default use dictionary create by "zstd --train"
+  -- default use dictionary that matches Zstandard's specification
   options.use_raw = options.use_raw or false
   if options.dictionary then
     local err = _load_dictionary(stream, options.dictionary, options.use_raw)
