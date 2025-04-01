@@ -7,26 +7,25 @@ Table of Contents
 
 - [Installation](#installation)
 - [Methods](#methods)
-  - [zstd.compressor.new](#zstd-compressor-new)
-  - [zstd.compressor.version](#zstd-compressor-version)
-  - [zstd.compressor:free](#zstd-compressor-free)
-  - [zstd.compressor:load_dictionary](#zstd-compressor-load_dictionary)
-  - [zstd.compressor:unload_dictionary](#zstd-compressor-unload_dictionary)
-  - [zstd.compressor:compress](#zstd-compressor-compress)
-  - [zstd.compressor:end_stream](#zstd-compressor-end_stream)
-  - [zstd.compressor:compress_file](#zstd-compressor-compress_file)
-  - [zstd.decompressor.new](#zstd-decompressor-new)
-  - [zstd.decompressor.version](#zstd-decompressor-version)
-  - [zstd.decompressor:free](#zstd-decompressor-free)
-  - [zstd.decompressor:load_dictionary](#zstd-decompressor-load_dictionary)
-  - [zstd.decompressor:unload_dictionary](#zstd-decompressor-unload_dictionary)
-  - [zstd.decompressor:decompress](#zstd-decompressor-decompress)
-  - [zstd.decompressor:decompress_file](#zstd-decompressor-decompress_file)
+  - [zstd.compressor.new](#zstdcompressornew)
+  - [zstd.compressor.version](#zstdcompressorversion)
+  - [zstd.compressor:free](#zstdcompressorfree)
+  - [zstd.compressor:load_dictionary](#zstdcompressorload_dictionary)
+  - [zstd.compressor:unload_dictionary](#zstdcompressorunload_dictionary)
+  - [zstd.compressor:compress](#zstdcompressorcompress)
+  - [zstd.compressor:end_stream](#zstdcompressorend_stream)
+  - [zstd.compressor:compress_file](#zstdcompressorcompress_file)
+  - [zstd.decompressor.new](#zstddecompressornew)
+  - [zstd.decompressor.version](#zstddecompressorversion)
+  - [zstd.decompressor:free](#zstddecompressorfree)
+  - [zstd.decompressor:load_dictionary](#zstddecompressorload_dictionary)
+  - [zstd.decompressor:unload_dictionary](#zstddecompressorunload_dictionary)
+  - [zstd.decompressor:decompress](#zstddecompressordecompress)
+  - [zstd.decompressor:decompress_file](#zstddecompressordecompress_file)
 - [Example](#example)
   - [Compress and decompress files](#compress-and-decompress-files)
   - [Compress http response](#compress-http-response)
 - [Reference](#reference)
-- [License](#license)
 
 Installation
 =================
@@ -253,10 +252,3 @@ Reference
 - [luajit-zstd](https://github.com/sjnam/luajit-zstd)
 
 [Back to TOC](#table-of-contents)
-
-LICENSE
-=================
-
-[GPL-3.0 license](https://github.com/yuweizzz/zstd-ffi/blob/main/LICENSE)
-
-[Back to TOC](#LICENSE)
