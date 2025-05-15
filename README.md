@@ -25,6 +25,7 @@ Table of Contents
 - [Example](#example)
   - [Compress and decompress files](#compress-and-decompress-files)
   - [Compress http response](#compress-http-response)
+  - [Compression dictionary transport](#compression-dictionary-transport)
 - [Reference](#reference)
 
 Installation
@@ -241,6 +242,12 @@ location / {
     }
 }
 ```
+
+[Back to TOC](#table-of-contents)
+
+### Compression dictionary transport
+
+See [here](https://github.com/yuweizzz/compression-dictionary-transport).
 
 [Back to TOC](#table-of-contents)
 
